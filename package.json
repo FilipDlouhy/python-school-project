@@ -1,0 +1,15 @@
+{
+    "name": "weather-fullstack",
+    "version": "1.0.0",
+    "description": "A fullstack weather application",
+    "main": "index.js",
+    "scripts": {
+        "postinstall": "cd weather-app && npm install && cd .. && cd weather-backend && pip install Flask pytest pytest-mock requests && cd .. && npm install concurrently",
+        "start": "concurrently \"cd weather-app && npm run dev\" \"cd weather-backend && python weather_server.py\""
+    },
+    "author": "Your Name",
+    "license": "ISC",
+    "dependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

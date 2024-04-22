@@ -38,7 +38,6 @@ function App() {
 
     try {
       const response = await axios.get<WeatherData>(url);
-      console.log(response.data);
       setWeather(response.data);
     } catch (error) {
       setWeather({ Error: "Failed to fetch weather data" });
@@ -50,7 +49,6 @@ function App() {
       case "forecast":
         return (
           <>
-            {" "}
             <input
               type="number"
               min="1"
@@ -101,83 +99,63 @@ function App() {
     }
   };
   const renderOutputUI = () => {
+    if (!weather) {
+      return <p>Loading weather data...</p>;  
+    }
+  
     switch (fetchType) {
       case "current":
+        if (!weather) {
+   
+          return <p>Weather data not available.</p>;
+        }
         return (
           <div>
             <h3>Current Weather</h3>
-            {weather && <div>{}</div>}
+            <div>
+              <p>Temperature: {weather.weather.feels_like}</p>
+              <p>Place: {weather.name}</p>
+              <p>Humidity: {weather.weather.humidity}</p>
+            </div>
           </div>
         );
       case "coordinates":
+        console.log(weather)
+
+      if (!weather) {
+        return <p>Weather data not available.</p>;
+      }
         return (
           <div className="w-full bg-black min-h-screen flex justify-center items-center">
             <div className="bg-gray-800 text-white p-8 rounded-lg shadow-md max-w-2xl w-full">
               <h3 className="text-blue-300 text-2xl font-semibold mb-4">
                 Weather Details
               </h3>
-              {weather && (
-                <div>
-                  <p className="text-lg">
-                    <strong>Location:</strong> {weather.name},{" "}
-                    {weather.sys.country}
-                  </p>
-                  <p className="text-lg">
-                    <strong>Temperature:</strong>{" "}
-                    {(weather.main.temp - 273.15).toFixed(2)}°C
-                  </p>
-                  <p className="text-lg">
-                    <strong>Weather:</strong> {weather.weather[0].main} -{" "}
-                    {weather.weather[0].description}
-                  </p>
-                  <p className="text-lg">
-                    <strong>Humidity:</strong> {weather.main.humidity}%
-                  </p>
-                  <p className="text-lg">
-                    <strong>Pressure:</strong> {weather.main.pressure} hPa
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <p className="text-lg">
-                      <strong>Wind Speed:</strong> {weather.wind.speed} m/s
-                    </p>
-                    <p className="text-lg">
-                      <strong>Wind Direction:</strong> {weather.wind.deg}°
-                    </p>
-                  </div>
-                </div>
-              )}
+              <div>
+              <p>Temperature: {((weather.main.feels_like - 273.15) ).toFixed(2)}°C</p>
+              <p>Place: {weather.name}</p>
+              <p>Humidity: {weather.main.humidity}</p>
+              </div>
             </div>
           </div>
         );
       case "forecast":
+        if (!weather.forecast) {
+          return <p>Forecast data not available.</p>;
+        }
         return (
           <div className="w-full bg-black min-h-screen flex justify-center items-center">
             <div className="bg-gray-800 text-white p-8 rounded-lg shadow-lg max-w-4xl">
               <h3 className="text-blue-300 text-2xl font-semibold mb-4">
-                Weather Forecast for {weather.city.name}, {weather.country}
+                Weather Forecast
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {weather.forecast.map((item, index) => (
                   <div key={index} className="bg-gray-700 p-4 rounded-lg">
-                    <p className="font-bold">
-                      {new Date(item.dt * 1000).toLocaleString()}
-                    </p>
-                    <p>
-                      Weather: {item.weather[0].main} -{" "}
-                      {item.weather[0].description}
-                    </p>
+                    <p className="font-bold">{new Date(item.dt * 1000).toLocaleString()}</p>
+                    <p>Weather: {item.weather[0].main} - {item.weather[0].description}</p>
                     <p>Temperature: {(item.main.temp - 273.15).toFixed(2)}°C</p>
-                    <p>
-                      Feels like: {(item.main.feels_like - 273.15).toFixed(2)}°C
-                    </p>
                     <p>Humidity: {item.main.humidity}%</p>
-                    <p>Pressure: {item.main.pressure} hPa</p>
-                    {item.pop && (
-                      <p>Chance of Rain: {(item.pop * 100).toFixed(0)}%</p>
-                    )}
-                    <p>
-                      Wind: {item.wind.speed} m/s, {item.wind.deg}°
-                    </p>
                   </div>
                 ))}
               </div>
@@ -188,6 +166,7 @@ function App() {
         return null;
     }
   };
+  
 
   return (
     <div className="w-full bg-black min-h-screen flex justify-center items-center">
